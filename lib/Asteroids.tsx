@@ -276,6 +276,7 @@ export const Asteroids: React.FC = () => {
   return (
     <div 
       ref={containerRef}
+      id="react-ts-asteroids"
       style={{
         height: '100%', 
         width: '100%',
@@ -322,6 +323,7 @@ export const Asteroids: React.FC = () => {
       </div>
       <canvas
         ref={canvasRef}
+        id="react-ts-asteroids--canvas"
         width={screen.width * screen.ratio}
         height={screen.height * screen.ratio}
         style={{

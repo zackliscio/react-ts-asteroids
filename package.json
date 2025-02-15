@@ -1,6 +1,6 @@
 {
   "name": "react-ts-asteroids",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "author": "zackliscio",
   "scripts": {
@@ -21,8 +21,8 @@
   "devDependencies": {
     "@eslint/js": "^9.19.0",
     "@types/node": "^22.13.4",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "eslint": "^9.19.0",
     "eslint-plugin-react-hooks": "^5.0.0",
