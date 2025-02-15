@@ -1,17 +1,18 @@
 {
-  "name": "asteroids",
+  "name": "react-ts-asteroids",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
+  "author": "zackliscio",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "description": "Asteroids written in Typescript using React",
+  "main": "dist/index.js",
   "dependencies": {
-    "@emotion/styled": "^11.14.0",
-    "@mui/material": "^6.4.4",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
@@ -27,5 +28,20 @@
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.22.0",
     "vite": "^6.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zackliscio/react-ts-asteroids.git"
+  },
+  "keywords": [
+    "asteroids",
+    "typescript",
+    "react",
+    "reacteroids"
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zackliscio/react-ts-asteroids/issues"
+  },
+  "homepage": "https://github.com/zackliscio/react-ts-asteroids#readme"
 }

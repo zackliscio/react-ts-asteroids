@@ -3,7 +3,6 @@ import Ship from './Ship';
 import Asteroid from './Asteroid';
 import { GameObject, GameState } from './types';
 import { randomNumBetweenExcluding } from './helpers'
-import { Box } from '@mui/material';
 
 const KEY = {
   LEFT:  37,
@@ -36,7 +35,7 @@ const createGameState = (screen: GameScreen, context: CanvasRenderingContext2D, 
   keys
 });
 
-export const Reacteroids: React.FC = () => {
+const Asteroids: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -275,9 +274,9 @@ export const Reacteroids: React.FC = () => {
   }, [context, update]);
 
   return (
-    <Box 
+    <div 
       ref={containerRef}
-      sx={{
+      style={{
         height: '100%', 
         width: '100%',
         position: 'relative',
@@ -332,6 +331,8 @@ export const Reacteroids: React.FC = () => {
           backgroundColor: '#000'
         }}
       />
-    </Box>
+    </div>
   );
 };
+
+export default Asteroids;

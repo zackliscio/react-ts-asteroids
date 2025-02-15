@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import '../lib/style.css';
+import Asteroids from '../lib';
 
 const rootElement = document.getElementById('root');
 
@@ -8,7 +9,9 @@ if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <React.StrictMode>
-      <App />
+      <div style={{ width: '100%', height: '100vh' }}>
+        <Asteroids />
+      </div>
     </React.StrictMode>
   );
 } 
