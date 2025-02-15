@@ -1,17 +1,35 @@
-export default class Particle {
-  constructor(args) {
-    this.position = args.position
-    this.velocity = args.velocity
+import { Point, GameObject, GameState } from './types';
+
+interface ParticleArgs {
+  position: Point;
+  velocity: Point;
+  size: number;
+  lifeSpan: number;
+}
+
+export default class Particle implements GameObject {
+  position: Point;
+  velocity: Point;
+  radius: number;
+  lifeSpan: number;
+  inertia: number;
+  delete?: boolean;
+  rotation: number; // Required by GameObject interface
+
+  constructor(args: ParticleArgs) {
+    this.position = args.position;
+    this.velocity = args.velocity;
     this.radius = args.size;
     this.lifeSpan = args.lifeSpan;
     this.inertia = 0.98;
+    this.rotation = 0; // Particles don't rotate but needed for GameObject interface
   }
 
-  destroy(){
+  destroy(): void {
     this.delete = true;
   }
 
-  render(state){
+  render(state: GameState): void {
     // Move
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
@@ -24,7 +42,7 @@ export default class Particle {
       this.radius = 0.1;
     }
     if(this.lifeSpan-- < 0){
-      this.destroy()
+      this.destroy();
     }
 
     // Draw

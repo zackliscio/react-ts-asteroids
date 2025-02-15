@@ -1,23 +1,42 @@
+import { Point, GameObject, GameState, CreateObject } from './types';
 import Particle from './Particle';
 import { asteroidVertices, randomNumBetween } from './helpers';
 
-export default class Asteroid {
-  constructor(args) {
-    this.position = args.position
+interface AsteroidArgs {
+  position: Point;
+  size: number;
+  create: CreateObject;
+  addScore: (score: number) => void;
+}
+
+export default class Asteroid implements GameObject {
+  position: Point;
+  velocity: Point;
+  rotation: number;
+  rotationSpeed: number;
+  radius: number;
+  score: number;
+  create: CreateObject;
+  addScore: (score: number) => void;
+  vertices: Point[];
+  delete?: boolean;
+
+  constructor(args: AsteroidArgs) {
+    this.position = args.position;
     this.velocity = {
       x: randomNumBetween(-1.5, 1.5),
       y: randomNumBetween(-1.5, 1.5)
-    }
+    };
     this.rotation = 0;
-    this.rotationSpeed = randomNumBetween(-1, 1)
+    this.rotationSpeed = randomNumBetween(-1, 1);
     this.radius = args.size;
     this.score = (80/this.radius)*5;
     this.create = args.create;
     this.addScore = args.addScore;
-    this.vertices = asteroidVertices(8, args.size)
+    this.vertices = asteroidVertices(8, args.size);
   }
 
-  destroy(){
+  destroy(): void {
     this.delete = true;
     this.addScore(this.score);
 
@@ -55,7 +74,7 @@ export default class Asteroid {
     }
   }
 
-  render(state){
+  render(state: GameState): void {
     // Move
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;

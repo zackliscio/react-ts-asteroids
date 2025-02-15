@@ -1,14 +1,33 @@
+import { Point, GameObject, GameState, CreateObject } from './types';
 import Bullet from './Bullet';
 import Particle from './Particle';
 import { rotatePoint, randomNumBetween } from './helpers';
 
-export default class Ship {
-  constructor(args) {
-    this.position = args.position
+interface ShipArgs {
+  position: Point;
+  create: CreateObject;
+  onDie: () => void;
+}
+
+export default class Ship implements GameObject {
+  position: Point;
+  velocity: Point;
+  rotation: number;
+  rotationSpeed: number;
+  speed: number;
+  inertia: number;
+  radius: number;
+  lastShot: number;
+  create: CreateObject;
+  onDie: () => void;
+  delete?: boolean;
+
+  constructor(args: ShipArgs) {
+    this.position = args.position;
     this.velocity = {
       x: 0,
       y: 0
-    }
+    };
     this.rotation = 0;
     this.rotationSpeed = 6;
     this.speed = 0.15;
@@ -19,7 +38,7 @@ export default class Ship {
     this.onDie = args.onDie;
   }
 
-  destroy(){
+  destroy(): void {
     this.delete = true;
     this.onDie();
 
@@ -41,16 +60,16 @@ export default class Ship {
     }
   }
 
-  rotate(dir){
-    if (dir == 'LEFT') {
+  rotate(dir: 'LEFT' | 'RIGHT'): void {
+    if (dir === 'LEFT') {
       this.rotation -= this.rotationSpeed;
     }
-    if (dir == 'RIGHT') {
+    if (dir === 'RIGHT') {
       this.rotation += this.rotationSpeed;
     }
   }
 
-  accelerate(val){
+  accelerate(val: number): void {
     this.velocity.x -= Math.sin(-this.rotation*Math.PI/180) * this.speed;
     this.velocity.y -= Math.cos(-this.rotation*Math.PI/180) * this.speed;
 
@@ -71,7 +90,7 @@ export default class Ship {
     this.create(particle, 'particles');
   }
 
-  render(state){
+  render(state: GameState): void {
     // Controls
     if(state.keys.up){
       this.accelerate(1);

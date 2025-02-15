@@ -1,7 +1,21 @@
+import { Point, GameObject, GameState } from './types';
 import { rotatePoint } from './helpers';
 
-export default class Bullet {
-  constructor(args) {
+interface BulletArgs {
+  ship: {
+    position: Point;
+    rotation: number;
+  };
+}
+
+export default class Bullet implements GameObject {
+  position: Point;
+  velocity: Point;
+  rotation: number;
+  radius: number;
+  delete?: boolean;
+
+  constructor(args: BulletArgs) {
     const posDelta = rotatePoint({x:0, y:-20}, {x:0,y:0}, args.ship.rotation * Math.PI / 180);
     this.position = {
       x: args.ship.position.x + posDelta.x,
@@ -9,17 +23,17 @@ export default class Bullet {
     };
     this.rotation = args.ship.rotation;
     this.velocity = {
-      x:posDelta.x / 2,
-      y:posDelta.y / 2
+      x: posDelta.x / 2,
+      y: posDelta.y / 2
     };
     this.radius = 2;
   }
 
-  destroy(){
+  destroy(): void {
     this.delete = true;
   }
 
-  render(state){
+  render(state: GameState): void {
     // Move
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
@@ -38,7 +52,7 @@ export default class Bullet {
     context.translate(this.position.x, this.position.y);
     context.rotate(this.rotation * Math.PI / 180);
     context.fillStyle = '#FFF';
-    context.lineWidth = 0,5;
+    context.lineWidth = 0.5;
     context.beginPath();
     context.arc(0, 0, 2, 0, 2 * Math.PI);
     context.closePath();
