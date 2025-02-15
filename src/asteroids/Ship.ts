@@ -69,7 +69,7 @@ export default class Ship implements GameObject {
     }
   }
 
-  accelerate(val: number): void {
+  accelerate(): void {
     this.velocity.x -= Math.sin(-this.rotation*Math.PI/180) * this.speed;
     this.velocity.y -= Math.cos(-this.rotation*Math.PI/180) * this.speed;
 
@@ -93,7 +93,7 @@ export default class Ship implements GameObject {
   render(state: GameState): void {
     // Controls
     if(state.keys.up){
-      this.accelerate(1);
+      this.accelerate();
     }
     if(state.keys.left){
       this.rotate('LEFT');
