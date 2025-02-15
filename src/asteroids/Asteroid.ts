@@ -41,8 +41,7 @@ export default class Asteroid {
     // Break into smaller asteroids
     if(this.radius > 10){
       for (let i = 0; i < 2; i++) {
-        let asteroid = new Asteroid({
-
+        const asteroid = new Asteroid({
           size: this.radius/2,
           position: {
             x: randomNumBetween(-10, 20)+this.position.x,
@@ -92,4 +91,4 @@ export default class Asteroid {
     context.stroke();
     context.restore();
   }
-}
+} 
