@@ -3,6 +3,7 @@ import Ship from './Ship';
 import Asteroid from './Asteroid';
 import { GameObject, GameState } from './types';
 import { randomNumBetweenExcluding } from './helpers'
+import { Box } from '@mui/material';
 
 const KEY = {
   LEFT:  37,
@@ -37,6 +38,7 @@ const createGameState = (screen: GameScreen, context: CanvasRenderingContext2D, 
 
 export const Reacteroids: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   
   // Game objects stored in refs since they don't need to trigger re-renders
   const shipRef = useRef<Ship[]>([]);
@@ -66,12 +68,15 @@ export const Reacteroids: React.FC = () => {
   const [topScore, setTopScore] = useState(() => Number(localStorage['topscore']) || 0);
   const [inGame, setInGame] = useState(false);
 
-  const handleResize = useCallback(() => {
-    setScreen({
-      width: window.innerWidth,
-      height: window.innerHeight,
-      ratio: window.devicePixelRatio || 1,
-    });
+  const updateDimensions = useCallback(() => {
+    if (containerRef.current) {
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      setScreen({
+        width,
+        height,
+        ratio: window.devicePixelRatio || 1,
+      });
+    }
   }, []);
 
   const handleKeys = useCallback((value: number, e: KeyboardEvent) => {
@@ -131,11 +136,15 @@ export const Reacteroids: React.FC = () => {
     bulletsRef.current = [];
     particlesRef.current = [];
 
+    // Get current container dimensions
+    const width = containerRef.current?.getBoundingClientRect().width ?? screen.width;
+    const height = containerRef.current?.getBoundingClientRect().height ?? screen.height;
+
     // Make ship
     const ship = new Ship({
       position: {
-        x: window.innerWidth/2,
-        y: window.innerHeight/2
+        x: width/2,
+        y: height/2
       },
       create: createObject,
       onDie: gameOver
@@ -144,7 +153,7 @@ export const Reacteroids: React.FC = () => {
 
     // Make asteroids
     generateAsteroids(asteroidCount);
-  }, [asteroidCount, createObject, gameOver, generateAsteroids]);
+  }, [asteroidCount, createObject, gameOver, generateAsteroids, screen.width, screen.height]);
 
   const checkCollision = useCallback((obj1: GameObject, obj2: GameObject): boolean => {
     const dx = obj1.position.x - obj2.position.x;
@@ -212,21 +221,36 @@ export const Reacteroids: React.FC = () => {
     animationFrameId.current = requestAnimationFrame(update);
   }, [context, screen, inGame, updateObjects, checkCollisionsWith]);
 
-  // Split into two separate effects
+  // Replace handleResize with updateDimensions
+  useEffect(() => {
+    // Initial size update
+    updateDimensions();
+
+    // Create ResizeObserver to watch container size changes
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    // Cleanup
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [updateDimensions]);
+
+  // Remove the window resize event listener from the original useEffect
   useEffect(() => {
     const keyUpHandler = (e: KeyboardEvent) => handleKeys(0, e);
     const keyDownHandler = (e: KeyboardEvent) => handleKeys(1, e);
 
     window.addEventListener('keyup', keyUpHandler);
     window.addEventListener('keydown', keyDownHandler);
-    window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('keyup', keyUpHandler);
       window.removeEventListener('keydown', keyDownHandler);
-      window.removeEventListener('resize', handleResize);
     };
-  }, [handleKeys, handleResize]); // Remove startGame and update from dependencies
+  }, [handleKeys]);
 
   // Separate effect for game initialization
   useEffect(() => {
@@ -251,25 +275,63 @@ export const Reacteroids: React.FC = () => {
   }, [context, update]);
 
   return (
-    <div>
+    <Box 
+      ref={containerRef}
+      sx={{
+        height: '100%', 
+        width: '100%',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
       {!inGame && (
-        <div className="endgame">
+        <div className="endgame" style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          textAlign: 'center',
+          color: 'white',
+          zIndex: 1
+        }}>
           <p>Game over!</p>
           <p>Score: {currentScore}</p>
           <button onClick={startGame}>Try again?</button>
         </div>
       )}
-      <span className="score current-score">Score: {currentScore}</span>
-      <span className="score top-score">Top Score: {topScore}</span>
-      <span className="controls">
-        Use [A][S][W][D] or [←][↑][↓][→] to MOVE<br/>
-        Use [SPACE] to SHOOT
-      </span>
+      <div style={{
+        position: 'absolute',
+        top: 20,
+        left: 20,
+        color: 'white',
+        zIndex: 1
+      }}>
+        <div className="score current-score">Score: {currentScore}</div>
+        <div className="score top-score">Top Score: {topScore}</div>
+      </div>
+      <div style={{
+        position: 'absolute',
+        bottom: 20,
+        left: 20,
+        color: 'white',
+        zIndex: 1
+      }}>
+        <span className="controls">
+          Use [A][S][W][D] or [←][↑][↓][→] to MOVE<br/>
+          Use [SPACE] to SHOOT
+        </span>
+      </div>
       <canvas
         ref={canvasRef}
         width={screen.width * screen.ratio}
         height={screen.height * screen.ratio}
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'block',
+          backgroundColor: '#000'
+        }}
       />
-    </div>
+    </Box>
   );
 };

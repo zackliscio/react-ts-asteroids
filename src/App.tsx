@@ -8,7 +8,7 @@ const App: React.FC = () => {
   return (
     <>
     <CssBaseline/>
-    <Box sx={{ maxWidth: '100%', maxHeight: '100vh', width: '100%', height: '100%' }}>
+    <Box sx={{ height: 750, width: 1200 }}>
       <Reacteroids />
     </Box>
     </>
