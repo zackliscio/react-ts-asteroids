@@ -1,12 +1,16 @@
-import { Typography } from '@mui/material';
-import { Box } from '@mui/material';
+
+import { Box, CssBaseline } from '@mui/material';
 import React from 'react';
+import {Reacteroids} from './asteroids/Reacteroids';
 
 const App: React.FC = () => {
   return (
-    <Box>
-      <Typography variant="h1">Asteroids</Typography>
+    <>
+    <CssBaseline/>
+    <Box sx={{ maxWidth: '100%', maxHeight: '100vh', width: '100%', height: '100%' }}>
+      <Reacteroids />
     </Box>
+    </>
   );
 };
 
