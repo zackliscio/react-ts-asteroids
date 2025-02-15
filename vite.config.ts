@@ -5,7 +5,10 @@ import dts from 'vite-plugin-dts'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), dts()],
+  plugins: [react(), dts({ 
+    tsconfigPath: './tsconfig.app.json',
+    include: ['lib'] 
+  })],
   build: {
     lib: {
       entry: resolve(__dirname, 'lib/main.ts'),
@@ -17,11 +20,8 @@ export default defineConfig({
       // into your library
       external: ['react', 'react-dom', 'react/jsx-runtime'],
       output: {
-        globals: {
-          'react': 'React',
-          'react-dom': 'ReactDOM',
-          'react/jsx-runtime': 'jsxRuntime',
-        },
+        assetFileNames: 'assets/[name][extname]',
+        entryFileNames: '[name].js',
       },
     },
   },  
