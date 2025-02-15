@@ -35,7 +35,7 @@ const createGameState = (screen: GameScreen, context: CanvasRenderingContext2D, 
   keys
 });
 
-const Asteroids: React.FC = () => {
+export const Asteroids: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -334,5 +334,3 @@ const Asteroids: React.FC = () => {
     </div>
   );
 };
-
-export default Asteroids;

@@ -8,9 +8,8 @@ export default defineConfig({
   plugins: [react(), dts()],
   build: {
     lib: {
-      entry: resolve(__dirname, 'lib/index.tsx'),
+      entry: resolve(__dirname, 'lib/main.ts'),
       formats: ['es'],
-      fileName: (format) => `react-ts-asteroids.${format}.js`,
     },
     copyPublicDir: false,
     rollupOptions: {

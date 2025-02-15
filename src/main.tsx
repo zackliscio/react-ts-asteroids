@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import '../lib/style.css';
-import Asteroids from '../dist/react-ts-asteroids.es.js';
+import { Asteroids }from '../dist/react-ts-asteroids.js';
 
 const rootElement = document.getElementById('root');
 
