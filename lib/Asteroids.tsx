@@ -67,6 +67,12 @@ export const Asteroids: React.FC = () => {
   const [topScore, setTopScore] = useState(() => Number(localStorage['topscore']) || 0);
   const [inGame, setInGame] = useState(false);
 
+  // Modify the initialization effects to use a ref to track first load
+  const isFirstLoad = useRef(true);
+
+  // Add a ref to track game state to avoid stale closures
+  const gameStateRef = useRef({ inGame: false });
+
   const updateDimensions = useCallback(() => {
     if (containerRef.current) {
       const { width, height } = containerRef.current.getBoundingClientRect();
@@ -97,20 +103,39 @@ export const Asteroids: React.FC = () => {
   }, []);
 
   const addScore = useCallback((points: number) => {
-    if (inGame) {
-      setCurrentScore(prev => prev + points);
+    if (gameStateRef.current.inGame) {
+      setCurrentScore(prevScore => prevScore + points);
     }
+  }, []);
+
+  // Add a useEffect to monitor inGame state
+  useEffect(() => {
+    gameStateRef.current.inGame = inGame;
   }, [inGame]);
 
+  // Add a useEffect to monitor currentScore state
+  useEffect(() => {
+  }, [currentScore]);
+
   const gameOver = useCallback(() => {
+    // Update ref first
+    gameStateRef.current.inGame = false;
     setInGame(false);
-    if (currentScore > topScore) {
-      setTopScore(currentScore);
-      localStorage['topscore'] = currentScore;
-    }
-  }, [currentScore, topScore]);
+    
+    setTopScore((currentTopScore) => {
+      const newTopScore = Math.max(currentScore, currentTopScore);
+      if (newTopScore > currentTopScore) {
+        localStorage['topscore'] = newTopScore;
+      }
+      return newTopScore;
+    });
+  }, [currentScore]);
 
   const generateAsteroids = useCallback((howMany: number) => {
+    const asteroidAddScore = (points: number) => {
+      addScore(points);
+    };
+
     for (let i = 0; i < howMany; i++) {
       const asteroid = new Asteroid({
         size: 80,
@@ -119,13 +144,15 @@ export const Asteroids: React.FC = () => {
           y: randomNumBetweenExcluding(0, screen.height, screen.height/2-60, screen.height/2+60)
         },
         create: createObject,
-        addScore
+        addScore: asteroidAddScore  // Use the wrapped version
       });
       createObject(asteroid, 'asteroids');
     }
   }, [screen.width, screen.height, createObject, addScore]);
 
   const startGame = useCallback(() => {
+    // Set game state first and update ref
+    gameStateRef.current.inGame = true;
     setInGame(true);
     setCurrentScore(0);
 
@@ -139,7 +166,6 @@ export const Asteroids: React.FC = () => {
     const width = containerRef.current?.getBoundingClientRect().width ?? screen.width;
     const height = containerRef.current?.getBoundingClientRect().height ?? screen.height;
 
-    // Make ship
     const ship = new Ship({
       position: {
         x: width/2,
@@ -150,7 +176,6 @@ export const Asteroids: React.FC = () => {
     });
     createObject(ship, 'ship');
 
-    // Make asteroids
     generateAsteroids(asteroidCount);
   }, [asteroidCount, createObject, gameOver, generateAsteroids, screen.width, screen.height]);
 
@@ -158,21 +183,23 @@ export const Asteroids: React.FC = () => {
     const dx = obj1.position.x - obj2.position.x;
     const dy = obj1.position.y - obj2.position.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    return distance < obj1.radius + obj2.radius;
+    const willCollide = distance < obj1.radius + obj2.radius;
+    return willCollide;
   }, []);
 
   const updateObjects = useCallback((items: GameObject[]) => {
-    let index = 0;
-    for (const item of items) {
-      if (item.delete) {
-        items.splice(index, 1);
-      } else {
-        // Only call render if context exists
-        if (context) {
-          items[index].render(createGameState(screen, context, keys));
-        }
+    // First render all items
+    items.forEach(item => {
+      if (!item.delete && context) {
+        item.render(createGameState(screen, context, keys));
       }
-      index++;
+    });
+
+    // Then filter out deleted items
+    const remainingItems = items.filter(item => !item.delete);
+    if (remainingItems.length !== items.length) {
+      items.length = 0;  // Clear the array
+      items.push(...remainingItems);  // Add back the remaining items
     }
   }, [screen, context, keys]);
 
@@ -185,8 +212,12 @@ export const Asteroids: React.FC = () => {
         const item1 = items1[a];
         const item2 = items2[b];
         if (checkCollision(item1, item2)) {
+          // First destroy the objects
           item1.destroy();
           item2.destroy();
+          // Then mark them for deletion
+          item1.delete = true;
+          item2.delete = true;
         }
       }
     }
@@ -209,15 +240,21 @@ export const Asteroids: React.FC = () => {
         updateObjects(asteroidsRef.current);
         updateObjects(bulletsRef.current);
         updateObjects(particlesRef.current);
-        checkCollisionsWith(bulletsRef.current, asteroidsRef.current);
-        checkCollisionsWith(shipRef.current, asteroidsRef.current);
+
+        // Check if arrays have content before collision check
+        if (bulletsRef.current.length > 0 && asteroidsRef.current.length > 0) {
+          checkCollisionsWith(bulletsRef.current, asteroidsRef.current);
+        }
+        if (shipRef.current.length > 0 && asteroidsRef.current.length > 0) {
+          checkCollisionsWith(shipRef.current, asteroidsRef.current);
+        }
       }
 
       context.restore();
-    }
 
-    // Store the animation frame ID
-    animationFrameId.current = requestAnimationFrame(update);
+      // Store the animation frame ID
+      animationFrameId.current = requestAnimationFrame(update);
+    }
   }, [context, screen, inGame, updateObjects, checkCollisionsWith]);
 
   // Replace handleResize with updateDimensions
@@ -251,19 +288,26 @@ export const Asteroids: React.FC = () => {
     };
   }, [handleKeys]);
 
-  // Separate effect for game initialization
+  // Initialize context only
   useEffect(() => {
     const context = canvasRef.current?.getContext('2d');
     if (context) {
       setContext(context);
-      startGame(); // Initial game start
     }
-  }, []); // Empty dependency array since this should only run once
+  }, []); // Only run once on mount
 
-  // Separate effect for the animation loop
+  // Start game only on first context set
+  useEffect(() => {
+    if (context && isFirstLoad.current) {
+      isFirstLoad.current = false;
+      startGame();
+    }
+  }, [context, startGame]);
+
+  // Keep animation loop separate
   useEffect(() => {
     if (!context) return;
-
+    
     animationFrameId.current = requestAnimationFrame(update);
 
     return () => {
@@ -272,6 +316,10 @@ export const Asteroids: React.FC = () => {
       }
     };
   }, [context, update]);
+
+  // Keep the game state monitoring effect
+  useEffect(() => {
+  }, [inGame, currentScore]);
 
   return (
     <div 

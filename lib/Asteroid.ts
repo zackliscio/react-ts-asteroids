@@ -37,9 +37,7 @@ export default class Asteroid implements GameObject {
   }
 
   destroy(): void {
-    this.delete = true;
     this.addScore(this.score);
-
     // Explode
     for (let i = 0; i < this.radius; i++) {
       const particle = new Particle({
@@ -66,8 +64,8 @@ export default class Asteroid implements GameObject {
             x: randomNumBetween(-10, 20)+this.position.x,
             y: randomNumBetween(-10, 20)+this.position.y
           },
-          create: this.create.bind(this),
-          addScore: this.addScore.bind(this)
+          create: this.create,
+          addScore: this.addScore
         });
         this.create(asteroid, 'asteroids');
       }
