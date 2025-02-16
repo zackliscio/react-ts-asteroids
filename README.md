@@ -1,50 +1,49 @@
-# React + TypeScript + Vite
+# React TypeScript Asteroids
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A classic Asteroids game implementation as a React component, written in TypeScript.
 
-Currently, two official plugins are available:
+## Installation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install react-ts-asteroids
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Quick Start
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+1. Import the Asteroids component:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```typescript
+import { Asteroids } from 'react-ts-asteroids';
+```
+
+2. Add it to your React application:
+
+```typescript
+function App() {
+  return (
+    <div style={{ width: '100%', height: '100vh' }}>
+      <Asteroids />
+    </div>
+  );
+}
+```
+
+Note: The container element must have a defined width and height for the game to render properly.
+
+## Controls
+
+- Use [A][S][W][D] or [←][↑][↓][→] to move the ship
+- Use [SPACE] to shoot
+
+## Features
+
+- Classic Asteroids gameplay
+- Responsive design - adapts to container size
+- Score tracking with local storage for high scores
+- Particle effects for explosions and thrusters
+- Written in TypeScript with React
+
+## License
+
+ISC
 ```
