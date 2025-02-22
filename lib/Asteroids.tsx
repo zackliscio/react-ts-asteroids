@@ -85,9 +85,9 @@ export const Asteroids: React.FC<{ darkMode?: boolean }> = ({ darkMode = false }
 
   // Replace the direct colors object with memoized version
   const colors = useMemo(() => ({
-    text: darkMode ? '#000000' : '#ffffff',
-    background: darkMode ? '#ffffff' : '#000000',
-    border: darkMode ? '#000000' : '#ffffff'
+    text: darkMode ? '#ffffff' : '#000000',
+    background: darkMode ? '#000000' : '#ffffff', 
+    border: darkMode ? '#ffffff' : '#000000'
   }), [darkMode]);
 
   const updateDimensions = useCallback(() => {
