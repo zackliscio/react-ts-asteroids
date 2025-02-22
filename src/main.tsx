@@ -1,6 +1,4 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
-import '../lib/style.css';
 import { Asteroids } from '../lib/Asteroids';
 
 const rootElement = document.getElementById('root');

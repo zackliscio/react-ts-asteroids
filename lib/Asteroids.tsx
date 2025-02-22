@@ -73,6 +73,9 @@ export const Asteroids: React.FC = () => {
   // Add a ref to track game state to avoid stale closures
   const gameStateRef = useRef({ inGame: false });
 
+  // Add state for button hover
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
+
   const updateDimensions = useCallback(() => {
     if (containerRef.current) {
       const { width, height } = containerRef.current.getBoundingClientRect();
@@ -329,7 +332,9 @@ export const Asteroids: React.FC = () => {
         height: '100%', 
         width: '100%',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        color: '#ffffff',
+        padding: 0
       }}
     >
       {!inGame && (
@@ -338,31 +343,57 @@ export const Asteroids: React.FC = () => {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          textAlign: 'center',
-          color: 'white',
-          zIndex: 1
+          padding: '16px',
+          zIndex: 1,
+          textAlign: 'center'
         }}>
           <p>Game over!</p>
           <p>Score: {currentScore}</p>
-          <button onClick={startGame}>Try again?</button>
+          <button 
+            onClick={startGame}
+            onMouseEnter={() => setIsButtonHovered(true)}
+            onMouseLeave={() => setIsButtonHovered(false)}
+            style={{
+              border: '4px solid #ffffff',
+              backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
+              color: isButtonHovered ? '#000000' : '#ffffff',
+              fontSize: '20px',
+              padding: '10px 20px',
+              margin: '10px',
+              cursor: 'pointer'
+            }}
+          >
+            Try again?
+          </button>
         </div>
       )}
       <div style={{
         position: 'absolute',
-        top: 20,
+        top: 15,
         left: 20,
-        color: 'white',
-        zIndex: 1
+        zIndex: 1,
+        fontSize: 20
       }}>
         <div className="score current-score">Score: {currentScore}</div>
+      </div>
+      <div style={{
+        position: 'absolute',
+        top: 15,
+        right: 20,
+        zIndex: 1,
+        fontSize: 20
+      }}>
         <div className="score top-score">Top Score: {topScore}</div>
       </div>
       <div style={{
         position: 'absolute',
-        bottom: 20,
-        left: 20,
-        color: 'white',
-        zIndex: 1
+        top: 15,
+        left: '50%',
+        transform: 'translate(-50%, 0)',
+        zIndex: 1,
+        fontSize: 11,
+        textAlign: 'center',
+        lineHeight: 1.6
       }}>
         <span className="controls">
           Use [A][S][W][D] or [←][↑][↓][→] to MOVE<br/>
@@ -378,7 +409,12 @@ export const Asteroids: React.FC = () => {
           width: '100%',
           height: '100%',
           display: 'block',
-          backgroundColor: '#000'
+          backgroundColor: '#000000',
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0
         }}
       />
     </div>
