@@ -49,7 +49,7 @@ export default class Particle implements GameObject {
     const context = state.context;
     context.save();
     context.translate(this.position.x, this.position.y);
-    context.fillStyle = '#ffffff';
+    context.fillStyle = state.colors.text;
     context.lineWidth = 2;
     context.beginPath();
     context.moveTo(0, -this.radius);

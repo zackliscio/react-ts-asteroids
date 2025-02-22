@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import Ship from './Ship';
 import Asteroid from './Asteroid';
 import { GameObject, GameState } from './types';
@@ -28,14 +28,21 @@ interface GameKeys {
   space: number;
 }
 
+interface GameColors {
+  text: string;
+  background: string;
+  border: string;
+}
+
 // Create a state that matches the GameState interface
-const createGameState = (screen: GameScreen, context: CanvasRenderingContext2D, keys: GameKeys): GameState => ({
+const createGameState = (screen: GameScreen, context: CanvasRenderingContext2D, keys: GameKeys, colors: GameColors): GameState => ({
   screen,
   context,
-  keys
+  keys,
+  colors
 });
 
-export const Asteroids: React.FC = () => {
+export const Asteroids: React.FC<{ darkMode?: boolean }> = ({ darkMode = false }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -75,6 +82,13 @@ export const Asteroids: React.FC = () => {
 
   // Add state for button hover
   const [isButtonHovered, setIsButtonHovered] = useState(false);
+
+  // Replace the direct colors object with memoized version
+  const colors = useMemo(() => ({
+    text: darkMode ? '#000000' : '#ffffff',
+    background: darkMode ? '#ffffff' : '#000000',
+    border: darkMode ? '#000000' : '#ffffff'
+  }), [darkMode]);
 
   const updateDimensions = useCallback(() => {
     if (containerRef.current) {
@@ -191,10 +205,9 @@ export const Asteroids: React.FC = () => {
   }, []);
 
   const updateObjects = useCallback((items: GameObject[]) => {
-    // First render all items
     items.forEach(item => {
       if (!item.delete && context) {
-        item.render(createGameState(screen, context, keys));
+        item.render(createGameState(screen, context, keys, colors));
       }
     });
 
@@ -204,7 +217,7 @@ export const Asteroids: React.FC = () => {
       items.length = 0;  // Clear the array
       items.push(...remainingItems);  // Add back the remaining items
     }
-  }, [screen, context, keys]);
+  }, [screen, context, keys, colors]);
 
   const checkCollisionsWith = useCallback((items1: GameObject[], items2: GameObject[]) => {
     let a = items1.length - 1;
@@ -232,7 +245,7 @@ export const Asteroids: React.FC = () => {
       context.scale(screen.ratio, screen.ratio);
 
       // Motion trail
-      context.fillStyle = '#000';
+      context.fillStyle = colors.background;
       context.globalAlpha = 0.4;
       context.fillRect(0, 0, screen.width, screen.height);
       context.globalAlpha = 1;
@@ -333,7 +346,7 @@ export const Asteroids: React.FC = () => {
         width: '100%',
         position: 'relative',
         overflow: 'hidden',
-        color: '#ffffff',
+        color: colors.text,
         padding: 0
       }}
     >
@@ -354,9 +367,9 @@ export const Asteroids: React.FC = () => {
             onMouseEnter={() => setIsButtonHovered(true)}
             onMouseLeave={() => setIsButtonHovered(false)}
             style={{
-              border: '4px solid #ffffff',
-              backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
-              color: isButtonHovered ? '#000000' : '#ffffff',
+              border: `4px solid ${colors.border}`,
+              backgroundColor: isButtonHovered ? colors.text : 'transparent',
+              color: isButtonHovered ? colors.background : colors.text,
               fontSize: '20px',
               padding: '10px 20px',
               margin: '10px',
@@ -409,7 +422,7 @@ export const Asteroids: React.FC = () => {
           width: '100%',
           height: '100%',
           display: 'block',
-          backgroundColor: '#000000',
+          backgroundColor: colors.background,
           position: 'absolute',
           top: 0,
           bottom: 0,

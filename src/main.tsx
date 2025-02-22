@@ -10,7 +10,7 @@ if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <div style={{ width: '100%', height: '100vh', padding: 0, margin: 0 }}>
-      <Asteroids />
+      <Asteroids darkMode={false}/>
     </div>
   );
 } 

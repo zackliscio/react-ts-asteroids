@@ -17,6 +17,11 @@ export interface GameState {
     down: number;
     space: number;
   };
+  colors: {
+    text: string;
+    background: string;
+    border: string;
+  };
 }
 
 export type CreateObject = (item: GameObject, group: string) => void;

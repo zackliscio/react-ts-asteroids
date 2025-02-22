@@ -97,7 +97,7 @@ export default class Asteroid implements GameObject {
     context.save();
     context.translate(this.position.x, this.position.y);
     context.rotate(this.rotation * Math.PI / 180);
-    context.strokeStyle = '#FFF';
+    context.strokeStyle = state.colors.text;
     context.lineWidth = 2;
     context.beginPath();
     context.moveTo(0, -this.radius);

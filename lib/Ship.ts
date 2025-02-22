@@ -132,8 +132,8 @@ export default class Ship implements GameObject {
     context.save();
     context.translate(this.position.x, this.position.y);
     context.rotate(this.rotation * Math.PI / 180);
-    context.strokeStyle = '#ffffff';
-    context.fillStyle = '#000000';
+    context.strokeStyle = state.colors.text;
+    context.fillStyle = state.colors.background;
     context.lineWidth = 2;
     context.beginPath();
     context.moveTo(0, -15);
